@@ -81,6 +81,9 @@ class Visualizer {
   ros::Publisher surrounding_vehicle_vis_pub_;
   ros::Publisher speed_limit_vis_pub_;
   tf::TransformBroadcaster ego_to_map_tf_;
+  tf::TransformBroadcaster ssc_map_to_map_tf;
+
+
   decimal_t marker_lifetime_{0.05};
 };  // Visualizer
 

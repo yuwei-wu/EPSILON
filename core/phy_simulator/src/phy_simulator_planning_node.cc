@@ -69,13 +69,20 @@ int main(int argc, char** argv) {
     ROS_ERROR("Failed to get param %s", map_path.c_str());
     assert(false);
   }
+
   std::string lane_net_path;
   if (!nh.getParam("lane_net_path", lane_net_path)) {
     ROS_ERROR("Failed to get param %s", lane_net_path.c_str());
     assert(false);
   }
 
-  PhySimulation phy_sim(vehicle_info_path, map_path, lane_net_path);
+  std::string parking_path;
+  if (!nh.getParam("parking_path", parking_path)) {
+    ROS_INFO_STREAM("No parking mode.");
+  }
+
+
+  PhySimulation phy_sim(vehicle_info_path, map_path, lane_net_path, parking_path);
 
   RosAdapter ros_adapter(nh);
   ros_adapter.set_phy_sim(&phy_sim);

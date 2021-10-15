@@ -389,6 +389,22 @@ void ObstacleSet::print() const {
   }
 }
 
+//@yuwei
+void PolygonParking::print() const {
+  printf("id: %d\n", id);
+  polygon.print();
+  printf("\n");
+}
+
+//@yuwei
+void ParkingSet::print() const {
+  for (const auto &lot : parking_lots) {
+    lot.second.print();
+  }
+}
+
+
+
 TrafficSignal::TrafficSignal()
     : start_point_(Vec2f::Zero()),
       end_point_(Vec2f::Zero()),

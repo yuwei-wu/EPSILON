@@ -25,8 +25,9 @@
 namespace roguelike_ray_casting {
 
 enum ValType {
-  OCCUPIED = 70,
-  FREE = 102,
+  OCCUPIED = 80,
+  // FREE = 102,
+  FREE = 127,
   SCANNED_OCCUPIED = 128,
   UNKNOWN = 0
 };

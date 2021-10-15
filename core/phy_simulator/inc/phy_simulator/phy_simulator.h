@@ -33,12 +33,17 @@ class PhySimulation {
  public:
   PhySimulation();
   PhySimulation(const std::string &vehicle_set_path,
-                const std::string &map_path, const std::string &lane_net_path);
+                const std::string &map_path, 
+                const std::string &parking_path, //@yuwei: parking
+                const std::string &lane_net_path);
   ~PhySimulation() {}
 
   common::LaneNet lane_net() const { return lane_net_; }
   common::ObstacleSet obstacle_set() const { return obstacle_set_; };
   common::VehicleSet vehicle_set() const { return vehicle_set_; }
+  //@yuwei: parking
+  common::ParkingSet parking_set() const {return parking_set_; }  
+  
   const std::vector<int> vehicle_ids() const { return vehicle_ids_; }
 
   bool AddTemporaryObstacleToMap(const common::Point &pt, const double &size);
@@ -48,6 +53,7 @@ class PhySimulation {
       const common::VehicleControlSignalSet &signal_set, const decimal_t &dt);
 
  private:
+ 
   bool GetDataFromArenaLoader();
 
   bool SetupVehicleModelForVehicleSet();
@@ -63,6 +69,9 @@ class PhySimulation {
 
   common::LaneNet lane_net_;
   common::ObstacleSet obstacle_set_;
+  //@yuwei: parking
+  common::ParkingSet parking_set_;
+  bool has_parking_ = false;
 
   int temp_obstacle_cnt_ = 0;
   int temp_obs_idx_offset_ = 10000;

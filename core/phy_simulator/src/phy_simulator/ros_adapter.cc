@@ -29,6 +29,12 @@ void RosAdapter::PublishDataWithStamp(const ros::Time& stamp) {
   arena_info_pub_.publish(msg);
 }
 
+
+
+
+//@yuwei:  arena_info_static get lane and obstacles 
+// vis/obstacle_set_vis (as the map)  polygons(not necessary convex) and circles
+
 void RosAdapter::PublishStaticDataWithStamp(const ros::Time& stamp) {
   vehicle_msgs::ArenaInfoStatic msg;
   vehicle_msgs::Encoder::GetRosArenaInfoStaticFromSimulatorData(
@@ -36,6 +42,10 @@ void RosAdapter::PublishStaticDataWithStamp(const ros::Time& stamp) {
       std::string("map"), &msg);
   arena_info_static_pub_.publish(msg);
 }
+
+
+
+//@yuwei:  arena_info_dynamic get vehicles (all vehicles)
 
 void RosAdapter::PublishDynamicDataWithStamp(const ros::Time& stamp) {
   vehicle_msgs::ArenaInfoDynamic msg;

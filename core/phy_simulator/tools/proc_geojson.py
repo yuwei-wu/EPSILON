@@ -11,13 +11,13 @@ from pprint import pprint
 # data_folder = '/home/denny/Dropbox/Dropbox/00-Research/IROS2019_wc_zl/qgis_playground/benchmark_track/geojson/'
 # data_folder = '/home/zl/catkin_ws/src/vehicle_planning/qgis_projects/urban_google_prj/geojson/'
 # data_folder = '/home/zl/catkin_ws/src/vehicle_planning/qgis_projects/highway/geojson/'
-data_folder = '../../../toolchain/qgis_projects/highway/geojson/'
+data_folder = '../../../toolchain/qgis_projects/parking/geojson/'
 
 print(data_folder)
 
-pt_feat_name = data_folder + "pt_feat" + ".geojson"
-pt_feat_json_fs = open(pt_feat_name).read()
-pt_feat_json = json.loads(pt_feat_json_fs)
+# pt_feat_name = data_folder + "pt_feat" + ".geojson"
+# pt_feat_json_fs = open(pt_feat_name).read()
+# pt_feat_json = json.loads(pt_feat_json_fs)
 
 lane_net_name = data_folder + "lane_net" + ".geojson"
 lane_net_json_fs = open(lane_net_name).read()
@@ -27,19 +27,21 @@ obstacles_name = data_folder + "obstacles" + ".geojson"
 obstacles_json_fs = open(obstacles_name).read()
 obstacles_json = json.loads(obstacles_json_fs)
 
-for f in pt_feat_json["features"]:
-  if f["properties"]["name"] == "origin":
-    origin = np.array(f["geometry"]["coordinates"])
+# for f in pt_feat_json["features"]:
+#   if f["properties"]["name"] == "origin":
+#     origin = np.array(f["geometry"]["coordinates"])
 
-for f in lane_net_json["features"]:
-  for pt in f["geometry"]["coordinates"][0]:
-    pt[0] = pt[0] - origin[0]
-    pt[1] = pt[1] - origin[1]
+# for f in lane_net_json["features"]:
+#   for pt in f["geometry"]["coordinates"][0]:
+#     # pt[0] = pt[0] - origin[0]
+#     # pt[1] = pt[1] - origin[1]
+#     pt[0] = pt[0]
+#     pt[1] = pt[1]
 
 for f in obstacles_json["features"]:
   for pt in f["geometry"]["coordinates"][0][0]:
-    pt[0] = pt[0] - origin[0]
-    pt[1] = pt[1] - origin[1]
+    pt[0] = pt[0]
+    pt[1] = pt[1]
 
 # save normed data
 lane_net_norm_name = data_folder + "lane_net_norm" + ".json"

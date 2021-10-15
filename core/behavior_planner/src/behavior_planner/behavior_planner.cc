@@ -441,8 +441,7 @@ ErrorType BehaviorPlanner::EvaluateSinglePolicyTraj(
   common::Vehicle ego_vehicle_terminal = forward_traj.back();
   decimal_t cost_efficiency_ego_to_desired_vel =
       fabs(ego_vehicle_terminal.state().velocity -
-           reference_desired_velocity_) /
-      10.0;
+           reference_desired_velocity_) / 10.0;
   common::Vehicle leading_vehicle;
   common::Lane ego_ref_lane;
   const decimal_t max_backward_len = 10.0;
@@ -485,7 +484,7 @@ ErrorType BehaviorPlanner::EvaluateSinglePolicyTraj(
   for (auto& traj : surround_traj) {
     decimal_t safety_tmp = 0.0;
     EvaluateSafetyCost(forward_traj, traj.second, &safety_tmp);
-    cost_safety += safety_tmp;
+    cost_safety += 2 * safety_tmp;
   }
 
   // * action
@@ -678,8 +677,7 @@ ErrorType BehaviorPlanner::ConstructReferenceLane(
   const decimal_t sim_lat_max = 1.5;
   decimal_t a_comfort = 1.67;
   decimal_t t_forward = ego_state.velocity / a_comfort;
-  decimal_t s_forward =
-      std::min(std::max(20.0, t_forward * ego_state.velocity), lane->end());
+  decimal_t s_forward = std::min(std::max(20.0, t_forward * ego_state.velocity), lane->end());
   decimal_t resolution = 0.2;
 
   for (decimal_t s = current_fs.vec_s[0]; s < current_fs.vec_s[0] + s_forward;
@@ -690,10 +688,10 @@ ErrorType BehaviorPlanner::ConstructReferenceLane(
     }
   }
 
-  reference_desired_velocity_ =
-      std::floor(std::min(std::max(v_ref - 2.0, 0.0), user_desired_velocity_));
+  reference_desired_velocity_ = std::floor(std::min(std::max(v_ref - 2.0, 0.0), user_desired_velocity_));
 
-  // printf("[DEBUG]reference desired vel %lf.\n", reference_desired_velocity_);
+
+  printf("[DEBUG]reference desired vel %lf.\n", reference_desired_velocity_);
   return kSuccess;
 }
 

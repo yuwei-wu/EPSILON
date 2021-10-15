@@ -67,6 +67,24 @@ void SscPlannerServer::PublishData() {
         common::State state;
         if (executing_traj_->GetState(ct, &state) == kSuccess) {
           FilterSingularityState(ctrl_state_hist_, &state);
+          if (!set_eval_){
+            prev_time_ = current_time;
+            prev_acc_ = state.acceleration;
+            set_eval_ = true;
+          }else{
+            double delta_time = current_time - prev_time_;
+            eval_traj_time_  += delta_time;
+            eval_cost_       += prev_acc_ * prev_acc_ * delta_time;
+            eval_num_        += 1;
+            prev_acc_ = state.acceleration;
+            prev_time_ = current_time;
+
+          }
+          
+          std::cout <<  " =============eval_traj_time_ is "  << eval_traj_time_ << std::endl;
+          std::cout <<  " =============eval_cost_ is "  << eval_cost_ << std::endl;
+          std::cout <<  " =============eval_num_ is "  << eval_num_ << std::endl;
+          
           ctrl_state_hist_.push_back(state);
           if (ctrl_state_hist_.size() > 100)
             ctrl_state_hist_.erase(ctrl_state_hist_.begin());
@@ -105,7 +123,7 @@ void SscPlannerServer::PublishData() {
       }
       int num_traj_mks = static_cast<int>(traj_mk_arr.markers.size());
       common::VisualizationUtil::FillHeaderIdInMarkerArray(
-          ros::Time(current_time), std::string("/map"), last_trajmk_cnt_,
+          ros::Time(current_time), std::string("map"), last_trajmk_cnt_,
           &traj_mk_arr);
       last_trajmk_cnt_ = num_traj_mks;
       executing_traj_vis_pub_.publish(traj_mk_arr);
@@ -119,7 +137,7 @@ ErrorType SscPlannerServer::FilterSingularityState(
     return kWrongStatus;
   }
   decimal_t duration = filter_state->time_stamp - hist.back().time_stamp;
-  decimal_t wheel_base = 2.85;
+  //decimal_t wheel_base = 2.85;
   decimal_t max_steer = M_PI / 4.0;
   decimal_t singular_velocity = kBigEPS;
   decimal_t max_orientation_rate = tan(max_steer) / 2.85 * singular_velocity;
@@ -210,6 +228,7 @@ void SscPlannerServer::PlanCycleCallback() {
     ctrl_state_hist_.clear();
     ctrl_state_hist_.push_back(last_smm_.ego_vehicle().state());
     executing_traj_ = std::move(planner_.trajectory());
+    //TrajEval();
     global_init_stamp_ = executing_traj_->begin();
     printf(
         "[SscPlannerServer]init plan success with stamp: %lf and angle %lf.\n",
@@ -236,6 +255,7 @@ void SscPlannerServer::PlanCycleCallback() {
 
     if (next_traj_->IsValid()) {
       executing_traj_ = std::move(next_traj_);
+      //TrajEval();
       // next_traj_ = common::Trajectory();
       Replan();
       return;
@@ -298,5 +318,36 @@ void SscPlannerServer::Replan() {
 
   next_traj_ = std::move(planner_.trajectory());
 }
+
+
+  void SscPlannerServer::TrajEval(){
+    // eval executing_traj_
+    double total_time  = executing_traj_->end() - executing_traj_->begin();
+    double cost = 0.0;
+    double start_time = executing_traj_->begin();
+    
+    common::State state;
+    double prev_acc = 0, acc = 0;
+    executing_traj_->GetState(start_time, &state);
+    prev_acc  = state.acceleration;
+    double dt = 0.1 * total_time;
+ 
+    for (double t = dt; t < total_time ; t += dt)  // for each trajectory
+    {
+      executing_traj_->GetState(start_time + t, &state);
+      cost +=  (0.25 * (prev_acc + state.acceleration) * (prev_acc + state.acceleration) ) * dt;
+      prev_acc = state.acceleration;
+    }
+
+    eval_traj_time_  += total_time;
+    eval_cost_       += cost;
+    eval_num_        += 1;
+    
+    std::cout <<  " =============eval_traj_time_ is "  << eval_traj_time_ << std::endl;
+    std::cout <<  " =============eval_cost_ is "  << eval_cost_ << std::endl;
+    std::cout <<  " =============eval_num_ is "  << eval_num_ << std::endl;
+
+  }
+
 
 }  // namespace planning

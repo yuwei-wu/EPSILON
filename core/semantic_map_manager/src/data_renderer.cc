@@ -27,13 +27,16 @@ DataRenderer::DataRenderer(SemanticMapManager *smm_ptr)
   printf("[DataRenderer] Initialization finished\n");
 }
 
+
+
+
 ErrorType DataRenderer::Render(const double &time_stamp,
                                const common::LaneNet &lane_net,
                                const common::VehicleSet &vehicle_set,
                                const common::ObstacleSet &obstacle_set) {
   time_stamp_ = time_stamp;
   GetEgoVehicle(vehicle_set);  // ~ Must update ego vehicle first
-  GetObstacleMap(obstacle_set);
+  GetObstacleMap(obstacle_set);  // update obstacles map
   GetWholeLaneNet(lane_net);
   GetSurroundingLaneNet(lane_net);
   GetSurroundingVehicles(vehicle_set);
@@ -53,6 +56,11 @@ ErrorType DataRenderer::Render(const double &time_stamp,
 
   return kSuccess;
 }
+
+
+
+
+
 
 ErrorType DataRenderer::InjectObservationNoise() {
   // * update uncertain vehicle ids if necessary
@@ -112,6 +120,9 @@ ErrorType DataRenderer::InjectObservationNoise() {
   return kSuccess;
 }
 
+
+
+
 ErrorType DataRenderer::GetEgoVehicle(const common::VehicleSet &vehicle_set) {
   ego_vehicle_ = vehicle_set.vehicles.at(ego_id_);
   ego_param_ = ego_vehicle_.param();
@@ -119,6 +130,8 @@ ErrorType DataRenderer::GetEgoVehicle(const common::VehicleSet &vehicle_set) {
   return kSuccess;
 }
 
+
+//@yuwei : get map
 ErrorType DataRenderer::GetObstacleMap(
     const common::ObstacleSet &obstacle_set) {
   // ~ NOTICE:
@@ -190,6 +203,8 @@ ErrorType DataRenderer::FakeMapper() {
   return kSuccess;
 }
 
+
+//@yuwei : get grid map in Cartesian coordinates
 ErrorType DataRenderer::RayCastingOnObstacleMap() {
   Vec3f ray_casting_origin;
   ego_vehicle_.Ret3DofStateAtGeometryCenter(&ray_casting_origin);

@@ -3,13 +3,16 @@
 
 ## 0.revised version
 
-To use this transportation simulation environment.
-
 Prerequisites:
 
-```
-apt-get install libdw-dev
-```
+
+[opencv](https://docs.opencv.org/master/d7/d9f/tutorial_linux_install.html)
+
+
+'''
+apt-get install libdw-dev; sudo apt-get update; sudo apt-get install gfortran
+
+'''
 
 
 

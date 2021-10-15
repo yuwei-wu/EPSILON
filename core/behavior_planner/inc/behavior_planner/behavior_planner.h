@@ -137,7 +137,7 @@ class BehaviorPlanner : public Planner {
   int autonomous_level_{2};
 
   decimal_t sim_resolution_{0.4};
-  decimal_t sim_horizon_{4.0};
+  decimal_t sim_horizon_{4.0}; 
   int aggressive_level_{3};
   planning::OnLaneForwardSimulation::Param sim_param_;
 

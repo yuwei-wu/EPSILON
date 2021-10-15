@@ -8,7 +8,7 @@ namespace odeint = boost::numeric::odeint;
 
 namespace simulator {
 
-VehicleModel::VehicleModel() : wheelbase_len_(2.5) { UpdateInternalState(); }
+VehicleModel::VehicleModel() : wheelbase_len_(2.85) { UpdateInternalState(); } // revise from 2.5 to 2.85
 
 VehicleModel::VehicleModel(double wheelbase_len, double max_steering_angle)
     : wheelbase_len_(wheelbase_len), max_steering_angle_(max_steering_angle) {
@@ -30,7 +30,7 @@ void VehicleModel::Step(double dt) {
       state_.steer = -max_steering_angle_;
   }
   state_.velocity = internal_state_[4];
-  state_.curvature = tan(state_.steer) * 1.0 / wheelbase_len_;
+  state_.curvature = tan(state_.steer) * state_.velocity / wheelbase_len_;  //@yuwei revised state_.velocity
   state_.acceleration = control_.acc_long;
   UpdateInternalState();
 }

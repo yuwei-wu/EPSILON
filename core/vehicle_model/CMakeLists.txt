@@ -44,6 +44,7 @@ add_library(hkust_pl_vehicle_model
     src/vehicle_model/controllers/ctx_idm_velocity_controller.cc
 )
 target_link_libraries(hkust_pl_vehicle_model
+    ${common_INCLUDE_DIRS}
     hkust_pl_common
 )
 

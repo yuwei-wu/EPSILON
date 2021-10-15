@@ -42,20 +42,19 @@ class ArenaLoader {
    * @param map_path
    * @param lane_net_path
    */
-  ArenaLoader(const std::string &vehicle_set_path, const std::string &map_path,
+  ArenaLoader(const std::string &vehicle_set_path, 
+              const std::string &map_path,
               const std::string &lane_net_path);
 
   inline std::string vehicle_set_path() const { return vehicle_set_path_; }
   inline std::string map_path() const { return map_path_; }
   inline std::string lane_net_path() const { return lane_net_path_; }
+  inline std::string parking_path() const { return parking_path_; }
 
-  inline void set_vehicle_set_path(const std::string &path) {
-    vehicle_set_path_ = path;
-  }
+  inline void set_vehicle_set_path(const std::string &path) {vehicle_set_path_ = path;}
   inline void set_map_path(const std::string &path) { map_path_ = path; }
-  inline void set_lane_net_path(const std::string &path) {
-    lane_net_path_ = path;
-  }
+  inline void set_lane_net_path(const std::string &path) { lane_net_path_ = path; }
+  inline void set_parking_path(const std::string &path) { parking_path_ = path; }
 
   /**
    * @brief Parse vehicles info from json
@@ -84,11 +83,26 @@ class ArenaLoader {
    */
   ErrorType ParseLaneNetInfo(common::LaneNet *p_lane_net);
 
+
+  //@yuwei: parking
+  /**
+   * @brief Parse parking info from json
+   *
+   * @param p_parking_set
+   * @return true Parsing success
+   * @return false Parsing failed
+   */
+  ErrorType ParseParkingInfo(common::ParkingSet *p_parking_set);
+   
+
+
  private:
   std::string vehicle_set_path_;
   std::string map_path_;
   std::string lane_net_path_;
+  std::string parking_path_;
   std::string pedestrian_set_path_;
+
 };
 
 }  // namespace phy_simulator

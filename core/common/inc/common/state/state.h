@@ -7,11 +7,11 @@ namespace common {
 struct State {
   decimal_t time_stamp{0.0};
   Vecf<2> vec_position{Vecf<2>::Zero()};
-  decimal_t angle{0.0};
+  decimal_t angle{0.0};  // heading angle
   decimal_t curvature{0.0};
   decimal_t velocity{0.0};
   decimal_t acceleration{0.0};
-  decimal_t steer{0.0};
+  decimal_t steer{0.0};  // steering angle
   void print() const {
     printf("State:\n");
     printf(" -- time_stamp: %lf.\n", time_stamp);

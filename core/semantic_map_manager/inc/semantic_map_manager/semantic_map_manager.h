@@ -47,6 +47,12 @@ class SemanticMapManager {
   ErrorType GetObstacleMapValueUsingGlobalPosition(const Vec2f &p_w,
                                                    ObstacleMapType *res);
 
+
+  ErrorType CheckCollisionUsingPosAndYaw(
+      const common::VehicleParam &vehicle_param, const Eigen::Vector3d &state,
+      bool *res);
+
+
   ErrorType CheckCollisionUsingStateAndVehicleParam(
       const common::VehicleParam &vehicle_param, const common::State &state,
       bool *res);

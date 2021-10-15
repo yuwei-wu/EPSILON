@@ -46,6 +46,10 @@ class Visualizer {
                         const common::LaneNet &lane_net);
   void VisualizeObstacleSet(const ros::Time &stamp,
                             const common::ObstacleSet &Obstacle_set);
+  
+  //@yuwei: parking
+  void VisualizeParkingSet(const ros::Time &stamp,
+                            const common::ParkingSet &Parking_set);
 
 
   ros::NodeHandle nh_;
@@ -53,7 +57,8 @@ class Visualizer {
   ros::Publisher vehicle_set_pub_;
   ros::Publisher lane_net_pub_;
   ros::Publisher obstacle_set_pub_;
-
+  ros::Publisher parking_set_pub_; //@yuwei: parking
+ 
   PhySimulation *p_phy_sim_;
 };  // Visualizer
 

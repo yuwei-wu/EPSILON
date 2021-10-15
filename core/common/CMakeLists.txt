@@ -95,6 +95,7 @@ add_library(hkust_pl_common
 )
 target_link_libraries(hkust_pl_common
     ${THIRD_PARTY_LIBRARIES}
+    ${OpenCV_LIBRARIES}
     opencv_core
     opencv_highgui
     hkust_pl_ooqp_itf

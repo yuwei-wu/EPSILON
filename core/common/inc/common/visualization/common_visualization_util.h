@@ -642,6 +642,7 @@ class VisualizationUtil {
     return kSuccess;
   }
 
+
   /**
    * @brief Get the Ros Marker Cube Using Oriented Bounding Box 2 D With Offset
    * Z object
@@ -730,7 +731,7 @@ class VisualizationUtil {
    * @param p_marker
    * @return ErrorType
    */
-  static ErrorType GetRosMarkerMeshUsingOrientedBoundingBox2D(
+  static ErrorType GetBMWRosMarkerMeshUsingOrientedBoundingBox2D(
       const OrientedBoundingBox2D& obb, const ColorARGB& color,
       visualization_msgs::Marker* p_marker) {
     p_marker->type = visualization_msgs::Marker::MESH_RESOURCE;
@@ -742,7 +743,9 @@ class VisualizationUtil {
     geometry_msgs::Pose obb_pose;
     GetRosPoseFrom3DofState(Vec3f(obb.x, obb.y, obb.angle), &obb_pose);
     // obb_pose.position.z = -0.4;
+
     p_marker->pose = obb_pose;
+
     tf::Quaternion q(0.0, -0.7071, -0.7071, 0.0);
     quaternionTFToMsg(
         tf::Quaternion(obb_pose.orientation.x, obb_pose.orientation.y,
@@ -751,6 +754,63 @@ class VisualizationUtil {
         p_marker->pose.orientation);
     return kSuccess;
   }
+
+ static ErrorType GetAudiRosMarkerMeshUsingOrientedBoundingBox2D(
+      const OrientedBoundingBox2D& obb, const ColorARGB& color,
+      visualization_msgs::Marker* p_marker) {
+    p_marker->type = visualization_msgs::Marker::MESH_RESOURCE;
+    p_marker->action = visualization_msgs::Marker::MODIFY;
+    p_marker->mesh_resource = "package://common/materials/audi.dae";
+    p_marker->mesh_use_embedded_materials = true;
+    FillScaleInMarker(Vec3f(1.0, 1.0, 1.0), p_marker);
+    FillColorInMarker(color, p_marker);
+    geometry_msgs::Pose obb_pose;
+    GetRosPoseFrom3DofState(Vec3f(obb.x, obb.y, (obb.angle)), &obb_pose);
+    // obb_pose.position.z = -0.4;
+
+    p_marker->pose = obb_pose;
+    
+    tf::Quaternion q(0.0, -0.7071, -0.7071, 0.0);
+    quaternionTFToMsg(
+        tf::Quaternion(obb_pose.orientation.x, obb_pose.orientation.y,
+                       obb_pose.orientation.z, obb_pose.orientation.w) *
+            q,
+        p_marker->pose.orientation);
+
+
+    p_marker->scale.x = 1.05;
+    p_marker->scale.y = 1.05;
+    p_marker->scale.z = 1.05;
+        
+
+    return kSuccess;
+  }
+
+
+  static ErrorType GetBusRosMarkerMeshUsingOrientedBoundingBox2D(
+      const OrientedBoundingBox2D& obb, const ColorARGB& color,
+      visualization_msgs::Marker* p_marker) {
+    p_marker->type = visualization_msgs::Marker::MESH_RESOURCE;
+    p_marker->action = visualization_msgs::Marker::MODIFY;
+    p_marker->mesh_resource = "package://common/materials/bus.dae";
+    p_marker->mesh_use_embedded_materials = true;
+    FillScaleInMarker(Vec3f(1.0, 1.0, 1.0), p_marker);
+    FillColorInMarker(color, p_marker);
+    geometry_msgs::Pose obb_pose;
+    GetRosPoseFrom3DofState(Vec3f(obb.x, obb.y, (obb.angle-1.5707963)), &obb_pose);
+    // obb_pose.position.z = -0.4;
+
+    p_marker->pose = obb_pose;
+
+    tf::Quaternion q(0.0, -0.7071, -0.7071, 0.0);
+    quaternionTFToMsg(
+        tf::Quaternion(obb_pose.orientation.x, obb_pose.orientation.y,
+                       obb_pose.orientation.z, obb_pose.orientation.w) *
+            q,
+        p_marker->pose.orientation);
+    return kSuccess;
+  }
+
 
   /**
    * @brief Get the Ros Marker Mesh Cone Using Position object
@@ -1040,30 +1100,43 @@ class VisualizationUtil {
       const ColorARGB& color_vel_vec, const ColorARGB& color_steer,
       const int& id, visualization_msgs::MarkerArray* p_marker_array) {
     ros::Time ros_time = ros::Time::now();
+
+
     // OBB
     visualization_msgs::Marker obb_marker;
     obb_marker.header.frame_id = "map";
     obb_marker.header.stamp = ros_time;
     obb_marker.id = id;
-    // obb_marker.ns = std::string("obb");
-    OrientedBoundingBox2D obb = vehicle.RetOrientedBoundingBox();
-    GetRosMarkerCubeUsingOrientedBoundingBox2D(obb, color_obb, 1.7,
-                                               &obb_marker);
     obb_marker.pose.position.z = 0.75;
+    //obb_marker.ns = std::string("obb");
+    OrientedBoundingBox2D obb = vehicle.RetOrientedBoundingBox();
 
-    // Vehicle model
-    visualization_msgs::Marker mesh_marker;
-    mesh_marker.header.frame_id = "map";
-    mesh_marker.header.stamp = ros_time;
-    mesh_marker.id = id + 1;
-    // mesh_marker.ns = std::string("model");
-    GetRosMarkerMeshUsingOrientedBoundingBox2D(obb, color_obb, &mesh_marker);
+
+    // add mesh or bounding box
+    // if (vehicle.id() == 0) { // ego car
+    //   GetBMWRosMarkerMeshUsingOrientedBoundingBox2D(obb, color_obb, &obb_marker);
+    // } 
+    // else{
+
+      // GetRosMarkerCubeUsingOrientedBoundingBox2D(obb, color_obb, 1.7,
+      //                                            &obb_marker);
+      GetRosMarkerCubeUsingOrientedBoundingBox2D(obb, color_obb, 1.7,  &obb_marker);
+      // if(vehicle.subclass() == std::string("car")){   
+      //     GetAudiRosMarkerMeshUsingOrientedBoundingBox2D(obb, color_obb, &obb_marker);
+      // }
+      // if (vehicle.subclass() == std::string("bus")){
+      //     GetBusRosMarkerMeshUsingOrientedBoundingBox2D(obb, color_obb, &obb_marker);
+      // }
+
+    // }
+    p_marker_array->markers.push_back(obb_marker);
+   
 
     // Velocity vector
     visualization_msgs::Marker vel_vec_marker;
     vel_vec_marker.header.frame_id = "map";
     vel_vec_marker.header.stamp = ros_time;
-    vel_vec_marker.id = id + 2;
+    vel_vec_marker.id = id + 1;
     // vel_vec_marker.ns = std::string("vel_vec");
     geometry_msgs::Pose pose;
     GetRosPoseFrom3DofState(vehicle.Ret3DofState(), &pose);
@@ -1071,78 +1144,77 @@ class VisualizationUtil {
     GetRosMarkerArrowUsingPoseAndNorm(pose, vehicle.state().velocity,
                                       color_vel_vec, &vel_vec_marker);
 
-    // Velocity text
+    //Velocity text
     visualization_msgs::Marker vel_text_marker;
     vel_text_marker.header.frame_id = "map";
     vel_text_marker.header.stamp = ros_time;
     auto pos = vehicle.Ret3DofState();
     pos(2) = 3.0;
     std::string str;
-    str += std::string(std::to_string(vehicle.id()) + "_");
-    // TODO: (@denny.ding) remove this code!
+    str += std::string("ID: " + std::to_string(vehicle.id()));
     decimal_t visualized_vel = vehicle.state().velocity;
     // if (visualized_vel < 0.1) visualized_vel = 0.0;
-    str += std::string(
-        GetStringByValueWithPrecision<decimal_t>(visualized_vel, 3) + " m/s\n");
+    if (vehicle.id() == 0) {
+        str += std::string(" VEL: " + 
+        GetStringByValueWithPrecision<decimal_t>(visualized_vel, 3) + "\n");
+
+    }
     // str += std::string("lon_acc: " +
     // GetStringByValueWithPrecision<decimal_t>(
     //                                      vehicle.state().acceleration, 3));
     // vel_text_marker.ns = std::string("txt");
     GetRosMarkerTextUsingPositionAndString(pos, str, cmap.at("black"),
-                                           Vec3f(0.75, 0.75, 0.75), id + 3,
+                                           Vec3f(0.8, 0.8, 0.8), id + 3,
                                            &vel_text_marker);
 
     // Steering angle
-    double arc_length = 10;
-    visualization_msgs::Marker steering_angle_marker;
-    steering_angle_marker.header.frame_id = "map";
-    steering_angle_marker.header.stamp = ros_time;
-    Vec3f state(vehicle.state().vec_position(0),
-                vehicle.state().vec_position(1), vehicle.state().angle);
+    // double arc_length = 10;
+    // visualization_msgs::Marker steering_angle_marker;
+    // steering_angle_marker.header.frame_id = "map";
+    // steering_angle_marker.header.stamp = ros_time;
+    // Vec3f state(vehicle.state().vec_position(0),
+    //             vehicle.state().vec_position(1), vehicle.state().angle);
 
-    common::CircleArc arc(state, vehicle.state().curvature, arc_length);
-    std::vector<Vec3f> arc_samples;
-    arc.GetSampledStates(0.2, &arc_samples);
-    GetRosMarkerLineStripUsing3DofStateVec(arc_samples, +0.2, color_steer,
-                                           Vec3f(0.1, 0, 0), id + 4,
-                                           &steering_angle_marker);
-    // steering_angle_marker.ns = std::string("steer_p");
+    // common::CircleArc arc(state, vehicle.state().curvature, arc_length);
+    // std::vector<Vec3f> arc_samples;
+    // arc.GetSampledStates(0.2, &arc_samples);
+    // GetRosMarkerLineStripUsing3DofStateVec(arc_samples, +0.2, color_steer,
+    //                                        Vec3f(0.1, 0, 0), id + 4,
+    //                                        &steering_angle_marker);
+    // // steering_angle_marker.ns = std::string("steer_p");
 
-    visualization_msgs::Marker steering_angle_marker_reverse;
-    steering_angle_marker_reverse.header.frame_id = "map";
-    steering_angle_marker_reverse.header.stamp = ros_time;
-    Vec3f state_reverse = state;
-    state_reverse(2) = normalize_angle(kPi + state_reverse(2));
-    common::CircleArc arc2(state_reverse, -1.0 * vehicle.state().curvature,
-                           arc_length);
-    std::vector<Vec3f> arc_samples2;
-    arc2.GetSampledStates(0.2, &arc_samples2);
-    GetRosMarkerLineStripUsing3DofStateVec(arc_samples2, +0.2, color_steer,
-                                           Vec3f(0.1, 0, 0), id + 5,
-                                           &steering_angle_marker_reverse);
+    // visualization_msgs::Marker steering_angle_marker_reverse;
+    // steering_angle_marker_reverse.header.frame_id = "map";
+    // steering_angle_marker_reverse.header.stamp = ros_time;
+    // Vec3f state_reverse = state;
+    // state_reverse(2) = normalize_angle(kPi + state_reverse(2));
+    // common::CircleArc arc2(state_reverse, -1.0 * vehicle.state().curvature,
+    //                        arc_length);
+    // std::vector<Vec3f> arc_samples2;
+    // arc2.GetSampledStates(0.2, &arc_samples2);
+    // GetRosMarkerLineStripUsing3DofStateVec(arc_samples2, +0.2, color_steer,
+    //                                        Vec3f(0.1, 0, 0), id + 5,
+    //                                        &steering_angle_marker_reverse);
     // steering_angle_marker_reverse.ns = std::string("steer_n");
 
-    visualization_msgs::Marker horizontal_marker;
-    horizontal_marker.header.frame_id = "map";
-    horizontal_marker.header.stamp = ros_time;
-    auto state3df = vehicle.Ret3DofState();
-    std::vector<Vecf<3>> horizontal_line;
-    const decimal_t line_width = 1.7;
-    horizontal_line.emplace_back(state3df[0] + line_width * sin(state3df[2]),
-                                 state3df[1] - line_width * cos(state3df[2]),
-                                 -0.2);
-    horizontal_line.emplace_back(state3df[0] - line_width * sin(state3df[2]),
-                                 state3df[1] + line_width * cos(state3df[2]),
-                                 -0.2);
-    GetRosMarkerLineStripUsing3DofStateVec(horizontal_line, -0.4, color_steer,
-                                           Vec3f(0.1, 0, 0), id + 6,
-                                           &horizontal_marker);
+    // visualization_msgs::Marker horizontal_marker;
+    // horizontal_marker.header.frame_id = "map";
+    // horizontal_marker.header.stamp = ros_time;
+    // auto state3df = vehicle.Ret3DofState();
+    // std::vector<Vecf<3>> horizontal_line;
+    // const decimal_t line_width = 1.7;
+    // horizontal_line.emplace_back(state3df[0] + line_width * sin(state3df[2]),
+    //                              state3df[1] - line_width * cos(state3df[2]),
+    //                              -0.2);
+    // horizontal_line.emplace_back(state3df[0] - line_width * sin(state3df[2]),
+    //                              state3df[1] + line_width * cos(state3df[2]),
+    //                              -0.2);
+    // GetRosMarkerLineStripUsing3DofStateVec(horizontal_line, -0.4, color_steer,
+    //                                        Vec3f(0.1, 0, 0), id + 6,
+    //                                        &horizontal_marker);
 
-    if (vehicle.id() == 0) {
-      p_marker_array->markers.push_back(mesh_marker);
-    } else {
-      p_marker_array->markers.push_back(obb_marker);
-    }
+
+
     p_marker_array->markers.push_back(vel_vec_marker);
     p_marker_array->markers.push_back(vel_text_marker);
     // p_marker_array->markers.push_back(steering_angle_marker);
@@ -1191,6 +1263,23 @@ class VisualizationUtil {
     return kSuccess;
   }
 
+
+  static ErrorType GetRosMarkerUsingPolygonParking(
+      const PolygonParking& lots, const int& id,
+      visualization_msgs::Marker* p_marker) {
+    std::vector<Point> points = lots.polygon.points;
+    points.push_back(*(points.begin()));
+    for (auto& p : points) {
+      p.z = -0.2;
+    }
+    p_marker->header.frame_id = "map";
+    p_marker->header.stamp = ros::Time::now();
+    GetRosMarkerLineStripUsingPoints(
+        points, Vec3f(0.15, 0, 0), cmap.at("gold"), id, p_marker);
+    return kSuccess;
+  }
+
+
   /**
    * @brief Get the Ros Marker Using Obstacle Set object
    *
@@ -1233,6 +1322,49 @@ class VisualizationUtil {
     }
     return kSuccess;
   }
+
+  //@yuwei: parking
+  static ErrorType GetRosMarkerUsingParkingSet(
+      const ParkingSet& parkings,
+      visualization_msgs::MarkerArray* p_marker_array) {
+
+
+    int id_cnt = 0;
+    for (const auto& p_lot : parkings.parking_lots) {
+      switch (p_lot.second.type) {
+        case 0: {
+          visualization_msgs::Marker obs_marker;
+          GetRosMarkerUsingPolygonParking(p_lot.second, id_cnt, &obs_marker);
+          p_marker_array->markers.push_back(obs_marker);
+          ++id_cnt;
+          break;
+        }
+        case 1: {
+          for (const auto& pt : p_lot.second.polygon.points) {
+            visualization_msgs::Marker obs_marker;
+            Vec3f pos(pt.x, pt.y, 0.4);
+            GetRosMarkerMeshConeUsingPosition(pos, cmap.at("yellow"), id_cnt,
+                                              &obs_marker);
+            p_marker_array->markers.push_back(obs_marker);
+            ++id_cnt;
+          }
+          break;
+        }
+        default:
+          break;
+      }
+    }
+    return kSuccess;
+  }
+
+
+
+
+
+
+
+
+
 
   /**
    * @brief Get the Ros Marker Arr Using Semantic Behavior object

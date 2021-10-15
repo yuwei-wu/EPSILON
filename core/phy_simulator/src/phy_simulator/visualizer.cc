@@ -11,6 +11,9 @@ Visualizer::Visualizer(ros::NodeHandle nh) : nh_(nh) {
       nh_.advertise<visualization_msgs::MarkerArray>("vis/lane_net_vis", 10);
   obstacle_set_pub_ = nh_.advertise<visualization_msgs::MarkerArray>(
       "vis/obstacle_set_vis", 10);
+  //@yuwei: parking
+  parking_set_pub_ = nh_.advertise<visualization_msgs::MarkerArray>(
+      "vis/parking_set_vis", 10);
 }
 
 void Visualizer::VisualizeData() {
@@ -23,6 +26,9 @@ void Visualizer::VisualizeDataWithStamp(const ros::Time &stamp) {
   VisualizeVehicleSet(stamp, p_phy_sim_->vehicle_set());
   VisualizeLaneNet(stamp, p_phy_sim_->lane_net());
   VisualizeObstacleSet(stamp, p_phy_sim_->obstacle_set());
+  //@yuwei: parking
+  VisualizeParkingSet(stamp, p_phy_sim_->parking_set());
+
 }
 
 // void Visualizer::SendTfWithStamp(const ros::Time &stamp) {
@@ -117,5 +123,18 @@ void Visualizer::VisualizeObstacleSet(const ros::Time &stamp,
   common::VisualizationUtil::FillStampInMarkerArray(stamp, &Obstacles_marker);
   obstacle_set_pub_.publish(Obstacles_marker);
 }
+
+
+
+void Visualizer::VisualizeParkingSet(const ros::Time &stamp,
+                                      const common::ParkingSet &Parking_set) {
+  visualization_msgs::MarkerArray Parking_marker;
+  common::VisualizationUtil::GetRosMarkerUsingParkingSet(Parking_set,
+                                                          &Parking_marker);
+  common::VisualizationUtil::FillStampInMarkerArray(stamp, &Parking_marker);
+  parking_set_pub_.publish(Parking_marker);
+}
+
+
 
 }  // namespace phy_simulator

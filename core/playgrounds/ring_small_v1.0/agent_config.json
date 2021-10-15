@@ -15,7 +15,7 @@
         "enable_openloop_prediction": true,
         "enable_tracking_noise": false,
         "enable_log": false,
-        "log_file": "/home/denny/catkin_ws/src/vehicle_planning/aux_tools/log/ring_mpdm.csv"
+        "log_file": ""
       },
       {
         "id": 1,

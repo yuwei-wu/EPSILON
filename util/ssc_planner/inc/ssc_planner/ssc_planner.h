@@ -160,7 +160,7 @@ class SscPlanner : public Planner {
   decimal_t time_origin_{0.0};
 
   State initial_state_;
-  bool has_initial_state_ = false;
+  bool has_init_state_ = false;
 
   common::FrenetState initial_frenet_state_;
 
@@ -201,6 +201,18 @@ class SscPlanner : public Planner {
   decimal_t time_cost_ = 0.0;
 
   planning::ssc::Config cfg_;
+
+
+
+  double eval_t1_ = 0;
+  double eval_t2_ = 0;
+  double eval_t3_ = 0;
+  int eval_num1_ = 0;
+  int eval_num2_ = 0;
+  int eval_num3_ = 0;
+
+
+
 };
 
 }  // namespace planning

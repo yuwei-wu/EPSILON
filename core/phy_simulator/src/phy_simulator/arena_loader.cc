@@ -62,7 +62,7 @@ bool ArenaLoader::ParseVehicleSet(common::VehicleSet *p_vehicle_set) {
         params_json["max_longitudinal_acc"].get<double>());
     param.set_max_lateral_acc(params_json["max_lateral_acc"].get<double>());
 
-    param.set_d_cr(param.length() / 2 - param.rear_suspension());
+    param.set_d_cr(param.length() / 2 - param.wheel_base() / 2 );
     vehicle.set_param(param);
 
     p_vehicle_set->vehicles.insert(
@@ -107,6 +107,43 @@ ErrorType ArenaLoader::ParseMapInfo(common::ObstacleSet *p_obstacle_set) {
   fs.close();
   return kSuccess;
 }
+
+
+//@yuwei: parking
+ErrorType ArenaLoader::ParseParkingInfo(common::ParkingSet *p_parking_set) {
+  printf("\n[ArenaLoader] Loading parking info\n");
+
+  std::fstream fs(parking_path_);
+  Json root;
+  fs >> root;
+
+  Json parking_json = root["features"];
+  for (int i = 0; i < static_cast<int>(parking_json.size()); ++i) {
+    Json obs = parking_json[i];
+    printf("Parking id %d.\n", obs["properties"]["id"].get<int>());
+    auto is_valid = obs["properties"]["is_valid"].get<int>();
+    if (!static_cast<bool>(is_valid)) {
+      continue;
+    }
+
+    common::PolygonParking poly;
+    poly.id = obs["properties"]["id"].get<int>();
+    poly.type = obs["properties"]["is_spec"].get<int>();
+    Json coord = obs["geometry"]["coordinates"][0][0];
+    int num_pts = static_cast<int>(coord.size());
+    for (int k = 0; k < num_pts; ++k) {
+      common::Point point(coord[k][0].get<double>(), coord[k][1].get<double>());
+      poly.polygon.points.push_back(point);
+    }
+    p_parking_set->parking_lots.insert(
+        std::pair<int, common::PolygonParking>(poly.id, poly));
+  }
+  p_parking_set->print();
+
+  fs.close();
+  return kSuccess;
+}
+
 
 ErrorType ArenaLoader::ParseLaneNetInfo(common::LaneNet *p_lane_net) {
   printf("\n[ArenaLoader] Loading lane net info\n");

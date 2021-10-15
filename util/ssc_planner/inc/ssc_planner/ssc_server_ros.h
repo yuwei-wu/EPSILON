@@ -62,6 +62,8 @@ class SscPlannerServer {
 
   void MainThread();
 
+  void TrajEval();
+
   ErrorType FilterSingularityState(const vec_E<common::State> &hist,
                                    common::State *filter_state);
 
@@ -99,6 +101,15 @@ class SscPlannerServer {
 
   vec_E<common::State> desired_state_hist_;
   vec_E<common::State> ctrl_state_hist_;
+
+
+  double eval_traj_time_  = 0.0;
+  double eval_cost_       = 0.0;
+  double eval_num_        = 0.0;
+  double prev_time_ = 0.0;
+  double prev_acc_  = 0.0;
+  bool   set_eval_  = false;
+
 };
 
 }  // namespace planning

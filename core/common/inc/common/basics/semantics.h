@@ -73,7 +73,7 @@ class VehicleParam {
   double max_longitudinal_acc_ = 2.0;
   double max_lateral_acc_ = 2.0;
 
-  double d_cr_ = 1.34;  // length between geometry center and rear axle
+  double d_cr_ = 1.015;  // length between geometry center and rear axle
 };
 
 class Vehicle {
@@ -162,6 +162,7 @@ enum class LateralBehavior {
   kLaneChangeLeft,
   kLaneChangeRight,
 };
+
 
 struct EnumClassHash {
   template <typename T>
@@ -350,9 +351,8 @@ template <typename T, int N_DIM>
 class GridMapND {
  public:
   enum ValType {
-    OCCUPIED = 70,
-    // FREE = 102,
-    FREE = 0,
+    OCCUPIED = 80,
+    FREE = 127,
     SCANNED_OCCUPIED = 128,
     UNKNOWN = 0
   };
@@ -703,6 +703,17 @@ struct PolygonObstacle {
   void print() const;
 };
 
+struct PolygonParking {
+  int id;
+  int type = 0;
+  Polygon polygon;
+
+  /**
+   * @brief Print info
+   */
+  void print() const;
+};
+
 struct ObstacleSet {
   std::unordered_map<int, CircleObstacle> obs_circle;
   std::unordered_map<int, PolygonObstacle> obs_polygon;
@@ -719,6 +730,28 @@ struct ObstacleSet {
    */
   void print() const;
 };
+
+
+
+struct ParkingSet {
+
+  std::unordered_map<int, PolygonParking> parking_lots;
+
+  /**
+   * @brief Return the size of container
+   *
+   * @return int size
+   */
+  inline int size() const { return parking_lots.size(); }
+
+  /**
+   * @brief Print info
+   */
+  void print() const;
+};
+
+
+
 
 /**
  * @brief Data structure for Nanoflann

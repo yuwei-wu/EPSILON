@@ -9,13 +9,19 @@ PhySimulation::PhySimulation() {
 
 PhySimulation::PhySimulation(const std::string &vehicle_set_path,
                              const std::string &map_path,
-                             const std::string &lane_net_path) {
+                             const std::string &lane_net_path,
+                             const std::string &parking_path) {
   std::cout << "[PhySimulation] Constructing..." << std::endl;
   p_arena_loader_ = new ArenaLoader();
 
   p_arena_loader_->set_vehicle_set_path(vehicle_set_path);
   p_arena_loader_->set_map_path(map_path);
   p_arena_loader_->set_lane_net_path(lane_net_path);
+
+  if(!parking_path.empty()){
+    p_arena_loader_->set_parking_path(parking_path);
+    has_parking_ = true;
+  }
 
   GetDataFromArenaLoader();
   SetupVehicleModelForVehicleSet();
@@ -26,6 +32,10 @@ bool PhySimulation::GetDataFromArenaLoader() {
   p_arena_loader_->ParseVehicleSet(&vehicle_set_);
   p_arena_loader_->ParseMapInfo(&obstacle_set_);
   p_arena_loader_->ParseLaneNetInfo(&lane_net_);
+  if (has_parking_){
+    p_arena_loader_->ParseParkingInfo(&parking_set_);
+  }
+  
   return true;
 }
 

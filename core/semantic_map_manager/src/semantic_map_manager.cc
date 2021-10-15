@@ -634,6 +634,34 @@ ErrorType SemanticMapManager::CheckCollisionUsingState(
   return kSuccess;
 }
 
+
+//@yuwei: static collision checking
+ErrorType SemanticMapManager::CheckCollisionUsingPosAndYaw(
+    const common::VehicleParam &vehicle_param, const Eigen::Vector3d &state,
+    bool *res) {
+  vec_E<Vec2f> vertices;
+  common::OrientedBoundingBox2D obb_ego;
+
+  obb_ego.x = state(0) + vehicle_param.d_cr() * cos(state(2));
+  obb_ego.y = state(1) + vehicle_param.d_cr() * sin(state(2));
+  obb_ego.angle = state(2);
+  obb_ego.width = vehicle_param.width();
+  obb_ego.length = vehicle_param.length();
+
+  common::ShapeUtils::GetVerticesOfOrientedBoundingBox(obb_ego, &vertices);
+
+  bool is_collision = false;
+  for (auto &v : vertices) {
+    CheckCollisionUsingGlobalPosition(v, &is_collision);
+    if (is_collision) {
+      *res = is_collision;
+      return kSuccess;
+    }
+  }
+  return kSuccess;
+}
+
+
 ErrorType SemanticMapManager::CheckCollisionUsingStateAndVehicleParam(
     const common::VehicleParam &vehicle_param, const common::State &state,
     bool *res) {
@@ -766,7 +794,7 @@ ErrorType SemanticMapManager::GetNearestLaneIdUsingState(
   }
 
   if (lanes_in_dist.empty()) {
-    printf("[GetNearestLaneIdUsingState]No nearest lane found.\n");
+    //@yuwei: printf("[GetNearestLaneIdUsingState]No nearest lane found.\n");
     return kWrongStatus;
   }
 
@@ -1202,7 +1230,7 @@ ErrorType SemanticMapManager::GetRefLaneForStateByBehavior(
   decimal_t arc_len;
   if (GetNearestLaneIdUsingState(state_3dof, navi_path, &current_lane_id,
                                  &distance_to_lane, &arc_len) != kSuccess) {
-    printf("[GetRefLaneForStateByBehavior]Cannot get nearest lane.\n");
+    //printf("[GetRefLaneForStateByBehavior]Cannot get nearest lane.\n");
     return kWrongStatus;
   }
 
