@@ -13,7 +13,6 @@ PhySimulation::PhySimulation(const std::string &vehicle_set_path,
                              const std::string &parking_path) {
   std::cout << "[PhySimulation] Constructing..." << std::endl;
   p_arena_loader_ = new ArenaLoader();
-
   p_arena_loader_->set_vehicle_set_path(vehicle_set_path);
   p_arena_loader_->set_map_path(map_path);
   p_arena_loader_->set_lane_net_path(lane_net_path);
